@@ -31,6 +31,36 @@ If you do not have a GitHub account, create a free account at [GitHub](https://g
 If you do not have an Astra account, create a free trial account at [Astra Registration](https://astra.datastax.com/register).
 
 
+## Create a database in Astra DB
+
+You will now create a database with a keyspace in it (a *keyspace* can contain tables). The API needs a couple of tables for persistent storage: they will be created programmatically on startup if they don't exist, so there's no need to worry too much about them.
+
+Besides creating the database, you need to retrieve a *token*, that is, a set of credentials used later to connect to it in a secure and authenticated way.
+
+1. Login to your Astra account
+
+2. Create a Database
+    1. Navigate to *Databases* in the Menu.
+    2. Click the *Create Database* button.
+    3. Create the database using the following:
+        * Database Name: `workshops`
+        * Keyspace Name: `spamclassifier`
+        * Provider: `Google Cloudß`
+        * Region: `us-east1`
+        
+        <img src="images/create_database.png">
+
+3. Generate and retrieve a DB Token 
+    1. Navigate to *Settings* in the Menu.
+    2. Navigate to *Token Management* within the Settings sub-menu.
+    3. Select the role `Database Administrator`.
+    4. Click the *Generate Token* button.
+    5. Click on *Download Token Details*.
+    6. Open the downloaded file `GeneratedToken.csv` and verify that you can read the file.
+
+        <img src="images/generate_token.png" />
+
+
 ## Gitpod
 
 Gitpod is an IDE in the cloud (modeled after VSCode). It comes with a full "virtual machine" (actually a Kubernetes-managed container), which you will use as if it were your own computer (e.g. downloading files, executing programs and scripts, training the model and eventually starting the API from it).
@@ -74,33 +104,4 @@ There are many more other features, probably familiar to those who have experien
 
 > **Note**: make sure you locate the "console switcher" on the bottom right; all commands, unless specified otherwise, are to be launched in the "work-shell" console.
 
-
-## Create a database in Astra DB
-
-You will now create a database with a keyspace in it (a *keyspace* can contain tables). The API needs a couple of tables for persistent storage: they will be created programmatically on startup if they don't exist, so there's no need to worry too much about them.
-
-Besides creating the database, you need to retrieve a *token*, that is, a set of credentials used later to connect to it in a secure and authenticated way.
-
-1. Login to your Astra account
-
-2. Create a Database
-    1. Navigate to *Databases* in the Menu.
-    2. Click the *Create Database* button.
-    3. Create the database using the following:
-        * Database Name: `workshops`
-        * Keyspace Name: `spamclassifier`
-        * Provider: `Google Cloudß`
-        * Region: `us-east1`
-        
-        <img src="images/create_database.png">
-
-3. Generate and retrieve a DB Token 
-    1. Navigate to *Settings* in the Menu.
-    2. Navigate to *Token Management* within the Settings sub-menu.
-    3. Select the role `Database Administrator`.
-    4. Click the *Generate Token* button.
-    5. Click on *Download Token Details*.
-    6. Open the downloaded file `GeneratedToken.csv` and verify that you can read the file.
-
-        <img src="images/generate_token.png" />
 
