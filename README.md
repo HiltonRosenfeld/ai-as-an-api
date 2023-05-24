@@ -42,7 +42,7 @@ Besides creating the database, you need to retrieve a *token*, that is, a set of
         * Provider: `Google Cloudß`
         * Region: `us-east1`
         
-        <img src="images/create_database.png">
+        <img width="345" src="images/create_database.png">
 
 3. Generate and retrieve a DB Token:
     1. Navigate to *Settings* in the Menu.
@@ -52,7 +52,7 @@ Besides creating the database, you need to retrieve a *token*, that is, a set of
     5. Click on *Download Token Details*.
     6. Open the downloaded file `GeneratedToken.csv` and verify that you can read the file.
 
-        <img src="images/generate_token.png" />
+        <img width="764" src="images/generate_token.png" />
 
 
 ## Gitpod
