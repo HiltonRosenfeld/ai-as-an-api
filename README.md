@@ -1,6 +1,5 @@
 # Workshop: IRT AI / ML
 
-## Introduction
 
 ### Learn to build your own NLP text classifier and expose it as an API using the following technologies:
 
@@ -24,9 +23,8 @@
 - Familiarity with Python;
 - A Github account is required for the hands-on.
 
----
 
-## Start Gitpod
+## Gitpod
 
 Gitpod is an IDE in the cloud (modeled after VSCode). It comes with a full "virtual machine" (actually a Kubernetes-managed container), which you will use as if it were your own computer (e.g. downloading files, executing programs and scripts, training the model and eventually starting the API from it).
 
