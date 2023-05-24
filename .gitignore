@@ -6,3 +6,4 @@ training/trained_model_v1/*.json
 training/trained_model_v1/*.h5
 secure-connect*zip
 .ipynb_checkpoints
+.DS_Store
