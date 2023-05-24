@@ -20,14 +20,9 @@
 
 ### Prerequisites:
 
-- Familiarity with Python;
-- A [GitHub](https://github.com/) account
-- An [Astra](https://astra.datastax.com) account
-
-#### GitHub
-If you do not have a GitHub account, create a free account at [GitHub](https://github.com/signup).
-
-### DataStax Astra
+- Familiarity with Python.
+- A GitHub account.
+    > If you do not have a GitHub account, create a free account at [GitHub](https://github.com/signup).
 
 ## Create a database in Astra DB
 
@@ -35,10 +30,10 @@ You will now create a database with a keyspace in it (a *keyspace* can contain t
 
 Besides creating the database, you need to retrieve a *token*, that is, a set of credentials used later to connect to it in a secure and authenticated way.
 
-1. Login to your Astra account<br>
+1. Login to your Astra account.
     > If you do not have an Astra account, create a free trial account at [Astra Registration](https://astra.datastax.com/register).
 
-2. Create a Database
+2. Create a Database:
     1. Navigate to *Databases* in the Menu.
     2. Click the *Create Database* button.
     3. Create the database using the following:
@@ -49,7 +44,7 @@ Besides creating the database, you need to retrieve a *token*, that is, a set of
         
         <img src="images/create_database.png">
 
-3. Generate and retrieve a DB Token 
+3. Generate and retrieve a DB Token:
     1. Navigate to *Settings* in the Menu.
     2. Navigate to *Token Management* within the Settings sub-menu.
     3. Select the role `Database Administrator`.
