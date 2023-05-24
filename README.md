@@ -102,7 +102,5 @@ Besides creating the database, you need to retrieve a *token*, that is, a set of
     5. Click on *Download Token Details*.
     6. Open the downloaded file `GeneratedToken.csv` and verify that you can read the file.
 
-    > **Important**: The instructor will show the token creation on screen, but will then destroy it immediately for security reasons.
-    
-    <img src="images/generate_token.png" />
+        <img src="images/generate_token.png" />
 
