@@ -92,7 +92,7 @@ Besides creating the database, you need to retrieve a *token*, that is, a set of
         * Provider: `Google Cloudß`
         * Region: `us-east1`
         
-    <img width="350" src="images/create_database.png">
+        <img width="350" src="images/create_database.png">
 
 3. Generate and retrieve a DB Token 
     1. Navigate to *Settings* in the Menu.
@@ -102,7 +102,7 @@ Besides creating the database, you need to retrieve a *token*, that is, a set of
     5. Click on *Download Token Details*.
     6. Open the downloaded file `GeneratedToken.csv` and verify that you can read the file.
 
-    <img width="350" src="images/generate_token.png" />
+        <img width="350" src="images/generate_token.png" />
 
     > **Important**: The instructor will show the token creation on screen, but will then destroy it immediately for security reasons.
 
