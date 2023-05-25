@@ -442,7 +442,7 @@ How do the values of `from_cache` look like now? (well, no surprises here).
 Take a look at the cache-reading logic in the `multiple_text_predictions` function code in `main.py`. Sometimes it pays off to carefully avoid wasting CPU cycles.
 
 
-#### Call log
+### Call log
 The `recent_log` endpoint provides a (time-ordered) listing of all the classification requests you issued recently.
 
 As you saw earlier, behind the scenes this is a `StreamingResponse` and, instead of relying on FastAPI to package your response as JSON, you manually construct its pieces as the data arrives from the database.
