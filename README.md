@@ -106,3 +106,22 @@ There are many more other features, probably familiar to those who have experien
 > **Note**: make sure you locate the "console switcher" on the bottom right; all commands, unless specified otherwise, are to be launched in the "work-shell" console.
 
 
+## Step 3. Open Jupyter
+
+In the Gitpod environment, we started Jupyter for you (it is running in the notebook-shell console). To open it, run the following command, which will open a browser to the notebook server listening:
+
+```
+gp preview --external $(gp url 8888)/notebooks/notebook/machineLearning.ipynb
+```
+
+> *Note*: The password to unlock the notebooks is `spamclassifier`.
+
+Once the notebook is available, navigate to the notebook directory and click on prepareDataset.ipynb to open it (in yet another tab).
+
+### How to run the Jupyter Notebook
+A notebook is made of "cells". Select a cell by clicking on it and execute it with Shift+Enter. Run all code cells in the notebook from the first to the last. 
+
+**Note: there are cells with the sole purpose of inspecting the contents of some variables.**
+
+Take your time, use them to better understand what's going on.
+
