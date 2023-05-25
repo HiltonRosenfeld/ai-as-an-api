@@ -5,6 +5,7 @@ tasks:
       cd /workspace/ai-as-an-api
       python -m pip install --upgrade pip
       pip install -r requirements.txt 2>&1 > install.log
+      pip uninstall typing_extensions 2>&1 > install.log
       mkdir -p /home/gitpod/.jupyter
       echo "# Configuration file for jupyter-notebook." >> /home/gitpod/.jupyter/jupyter_notebook_config.py
       echo "# See: https://jupyter-notebook.readthedocs.io/en/stable/config.html" >> /home/gitpod/.jupyter/jupyter_notebook_config.py

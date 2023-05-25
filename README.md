@@ -152,7 +152,7 @@ A notebook is made of "cells". Select a cell by clicking on it and execute it wi
 Take your time, use them to better understand what's going on.
 
 
-## Step 5. Expost the Model as an API
+## Step 5. Expose the Model as an API
 
 Now your model is trained and saved to disk, ready to be used, it is time to expose it with FastAPI in the form of easy-to-use HTTP requests.
 
