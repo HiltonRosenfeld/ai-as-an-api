@@ -172,7 +172,7 @@ astra setup
 
 <details>
 <summary>Show me the setup step</summary>
-<img src="images/astra-setup-token.png" />
+<img src="images/astra-setup-token-2.png" />
 </details>
 
 You can test that everything works by inspecting your database:
@@ -183,7 +183,7 @@ astra db get workshops
 
 <details>
 <summary>Show me a typical output</summary>
-<img src="images/astra-db-get.png" />
+<img src="images/astra-db-get-2.png" />
 </details>
 
 At this point you can have the CLI prepare a `.env` file with all required connection information (keyspace name, access token, location of the [secure connect bundle](https://awesome-astra.github.io/docs/pages/astra/download-scb/) which it downloads automatically) available as environment variables:
@@ -206,3 +206,19 @@ At this point, the `.env` file should be OK. If you are curious, have a look at 
 </details>
 
 > **Note**: If you don't have (or don't want to use) the actual trained model at hand, you can switch to a lightweight mock by setting `MOCK_MODEL_CLASS="1"` in this dot-env file. The API part of the practice would "not even notice the change".
+
+
+### Minimal API
+Now that the trained model is there, the `.env` file is ready and the secure bundle is in place, you can start a minimal form of the API with:
+
+```
+uvicorn api.minimain:miniapp --reload
+```
+
+> **Note**: In this command, you are telling `uvicorn` (an [ASGI server](https://www.uvicorn.org/) capable of running asynchronous Python APIs) to launch the miniapp API found in the minimain module; you also ask it to keep a watch on all involved files and auto-reload on any file change.
+
+After some (rather verbose) output from Tensorflow, you should see the `INFO: Application startup complete`. The API has loaded the classifier and is ready to accept requests (on localhost and port 8000, as per defaults). You will first fire some requests and then have a quick look at how the code is structured.
+
+> **Note**: This code is purposefully kept very simple: besides not implementing all the features, it also refrains from using some of the facilities provided by FastAPI to better focus on the basics. Look at the full API below for a more comprehensive usage of the framework.
+
+
