@@ -24,7 +24,14 @@
 - A GitHub account.
     > If you do not have a GitHub account, create a free account at [GitHub](https://github.com/signup).
 
-## Create a database in Astra DB
+### Procedure:
+To start with you will create an Astra database and initialise a GitPod environment. Those steps are documented below. 
+
+The remainder of the workshop continues from within GitPod.
+
+---
+
+## Step 1: Create a database in Astra DB
 
 You will now create a database with a keyspace in it (a *keyspace* can contain tables). The API needs a couple of tables for persistent storage: they will be created programmatically on startup if they don't exist, so there's no need to worry too much about them.
 
@@ -55,7 +62,7 @@ Besides creating the database, you need to retrieve a *token*, that is, a set of
         <img width="764" src="images/generate_token.png" />
 
 
-## Gitpod
+## Step 2: Gitpod
 
 Gitpod is an IDE in the cloud (modeled after VSCode). It comes with a full "virtual machine" (actually a Kubernetes-managed container), which you will use as if it were your own computer (e.g. downloading files, executing programs and scripts, training the model and eventually starting the API from it).
 
