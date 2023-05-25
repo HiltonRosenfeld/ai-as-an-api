@@ -106,7 +106,7 @@ There are many more other features, probably familiar to those who have experien
 > **Note**: make sure you locate the "console switcher" on the bottom right; all commands, unless specified otherwise, are to be launched in the "work-shell" console.
 
 
-## Step 3. Inspect the starting dataset
+## Step 3. Inspect the Dataset
 Open the file `training/dataset/spam-dataset.csv` and have a look at the lines there.
 > Tip: you can open a file in Gitpod by locating it with the "File Explorer" on your left, but if you like using the keyboard you may simply issue the command `gp open training/dataset/spam-dataset.csv` from the `bash` Console at the bottom.
 
