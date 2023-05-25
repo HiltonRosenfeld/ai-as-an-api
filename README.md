@@ -27,7 +27,7 @@
 ### Procedure:
 To start with you will create an Astra database and initialise a GitPod environment. Those steps are documented below. 
 
-The remainder of the workshop continues from within GitPod.
+The remainder of the workshop continues from within the GitPod environment deployed in Step 2.
 
 ---
 
@@ -75,7 +75,7 @@ The button below will:
 
 **Click on the Gitpod button:**
 
-<img src="images/open-in-gitpod.svg" alt="Start the Interactive Lab on Gitpod" />
+<a href="https://gitpod.io/#https://github.com/HiltonRosenfeld/ai-as-an-api"><img src="images/open-in-gitpod.svg" alt="Start the Interactive Lab on Gitpod" /></a>
 
 > **Note**: you may have to authorise GitPod to sign in with your GitHub account.
 
