@@ -1,6 +1,5 @@
 # Workshop: IRT AI / ML
 
-
 <br />
 
 ### Learn to build your own NLP text classifier and expose it as an API using the following technologies:
@@ -9,8 +8,6 @@
 - Astra DB, a Database-as-a-Service built on Apache Cassandra®;
 - FastAPI, the high-performance Python framework for creating APIs;
 - Many useful Python libraries and packages including `pandas`, `pydantic`, `dotenv`, `sklearn`, `uvicorn`, and more.
-
-<br />
 
 ### During this hands-on workshop, you will:
 
@@ -22,15 +19,11 @@
 - learn how to speed up the API with DB-based caching;
 - inspect how a streaming response is handled in the API.
 
-<br />
-
 ### Prerequisites:
 
 - Familiarity with Python.
 - A GitHub account.
     > If you do not have a GitHub account, create a free account at [GitHub](https://github.com/signup).
-
-<br />
 
 ### Procedure:
 To start with you will create an Astra database and initialise a GitPod environment. Those steps are documented below. 
