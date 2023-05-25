@@ -145,23 +145,24 @@ Look at line 352 of this file for example. Is that message spam or ham?
 
 # Step 4. Train the Model in Jupyter
 
-In the Gitpod environment, we started Jupyter for you (it is running in the notebook-shell console). To open it, run the following command **in the `work-shell` console**, which will open a browser to the notebook server listening:
+In the Gitpod environment, we started Jupyter for you (it is running in the notebook-shell console). To open it, run the following command, which will open a browser to the notebook server listening:
+
+**Use the `work-shell` console**
 
 ```
 gp preview --external $(gp url 8888)/notebooks/notebook/machineLearning.ipynb
 ```
 
-> *Note*: The password to unlock the notebook is `spamclassifier`.
+> **Note**: The password to unlock the notebook is `spamclassifier`.
 
 <br />
 
-## How to run the Jupyter Notebook
+### How to run the Jupyter Notebook
 A notebook is made of "cells". Select a cell by clicking on it and execute it with Shift+Enter. Run all code cells in the notebook from the first to the last. 
 
-**Note: there are cells with the sole purpose of inspecting the contents of some variables.**
+> **Note**: there are cells with the sole purpose of inspecting the contents of some variables. Take your time, use them to better understand what's going on.
 
-Take your time, use them to better understand what's going on.
-
+When you have completed the Jupyter Notebook, come back to this document and continue with Step 5.
 
 <br />
 
@@ -174,7 +175,7 @@ You'll first look at a minimal version of the API, just to get a taste of how Fa
 
 <br />
 
-## Configure environment .env file
+## Configure Astra connection .env file
 Now you need to prepare a configuration file to give the API all required parameters to connect to the database. Fortunately, the Astra CLI has you covered and will automate most of it for you: all you need is to run a couple of commands.
 
 **Use the `work-shell` for these commands.**
@@ -264,7 +265,7 @@ This minimal API already accomplishes the basic task for today: namely, it makes
 
 Let's try with some POST requests (**curl-shell console**):
 
-**single-text endpoint**
+**Run a single-text endpoint**
 ```
 curl -s -XPOST \
   localhost:8000/prediction \
@@ -272,7 +273,7 @@ curl -s -XPOST \
   -H 'Content-Type: application/json' | python -mjson.tool
 ```
 
-**multiple-texts endpoint**
+**Run multiple-texts endpoint**
 ```
 curl -s -XPOST \
   localhost:8000/predictions \
@@ -308,11 +309,12 @@ The core of the API, the classifier model, is conveniently wrapped into a separa
 
 > **Note**: have a look at the class in `AIModel.py`. There is nothing specific to spam classification there. Indeed, this is a widely reusable class, that can load and expose any text classifier based on a similar tokenizer-then-predict structure as it is.
 
+You can now stop the minimal API (Ctrl-C in the `work-shell` console).
 
 <br />
 
 ## The Full API
-You can now stop the minimal API (Ctrl-C in its console) and get ready to start the full API. This is your "production-ready" result and, as such, has many more nice features that we will now list (just giving pointers for those interested in knowing more):
+This is your "production-ready" result and, as such, has many more nice features that we will now list (just giving pointers for those interested in knowing more):
 
 <details>
 <summary>Tell me about the nice features of this API</summary>
@@ -370,7 +372,7 @@ curl -s \
 
 <br />
 
-## Launch the full API
+### Launch the full API
 Without further ado, it is time to start the full-fledged API.
 
 **Switch to the `work-shell` console.**
@@ -400,7 +402,7 @@ Now for an actual request to process some text (curl-shell console):
 
 <br />
 
-**A single-text endpoint**
+**Run a single-text endpoint**
 ```
 curl -s -XPOST \
   localhost:8000/prediction \
@@ -441,7 +443,7 @@ Take a moment to look around. Look at the details for an endpoint and notice tha
 
 <br />
 
-## Fun with caching
+### Fun with caching
 Let's have some fun with the caching mechanism and the multiple-text endpoint. For this experiment you will borrow a few lines from a famous poem by T. S. Eliot.
 
 First locate the `/predictions` endpoint, expand it and click "**Try it out**" to access the interactive form. Edit the "**Request Body**" field pasting the following:
@@ -491,7 +493,7 @@ Take a look at the cache-reading logic in the `multiple_text_predictions` functi
 
 <br />
 
-## API Call log
+### API Call log
 The `recent_log` endpoint provides a (time-ordered) listing of all the classification requests you issued recently.
 
 As you saw earlier, behind the scenes this is a `StreamingResponse` and, instead of relying on FastAPI to package your response as JSON, you manually construct its pieces as the data arrives from the database.
