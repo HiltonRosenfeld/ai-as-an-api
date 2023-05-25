@@ -27,7 +27,7 @@
 ### Procedure:
 To start with you will create an Astra database and initialise a GitPod environment. Those steps are documented below. 
 
-The remainder of the workshop continues from within the GitPod environment deployed in Step 2.
+The remainder of the workshop continues from within the GitPod environment deployed in Step 2, and the Jupyter notebook in Step 3.
 
 ---
 
@@ -124,4 +124,31 @@ A notebook is made of "cells". Select a cell by clicking on it and execute it wi
 **Note: there are cells with the sole purpose of inspecting the contents of some variables.**
 
 Take your time, use them to better understand what's going on.
+
+
+## Step 4. Inspect the starting dataset
+Open the file `training/dataset/spam-dataset.csv` and have a look at the lines there.
+> Tip: you can open a file in Gitpod by locating it with the "File Explorer" on your left, but if you like using the keyboard you may simply issue the command `gp open training/dataset/spam-dataset.csv` from the `bash` Console at the bottom.
+
+This is a CSV file with three columns (separated by commas):
+
+- whether the line is spam or "ham" (i.e. the opposite of spam),
+- a short piece of text (a "message"),
+- the tag identifying the source of this datapoint (this will be ignored by the scripts).
+
+
+The third column betrays the mixed origin of the data. To create our labeled dataset of 7,500 messages, two sets made available by the UCI Machine Learning Repository have been merged:
+- [SMS Spam Collection Data Set](https://archive.ics.uci.edu/ml/datasets/SMS+Spam+Collection)
+- [YouTube Spam Collection Data Set](https://archive.ics.uci.edu/ml/datasets/YouTube+Spam+Collection)
+
+Luckily, the (not always fun) task of cleaning, validating and normalizing the heterogeneous (and usually imperfect) data has been already done for you -- something that is seldom the case, alas, in a real-world task.
+
+Look at line 352 of this file for example. Is that message spam or ham?
+> Tip: hit Ctrl-G in the Gitpod editor to jump to a specific line number.
+
+<details>
+<summary>Show me that line in Gitpod's editor</summary>
+
+<img src="images/gitpod_gotoline.png" />
+</details>
 
