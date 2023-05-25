@@ -1,12 +1,16 @@
 # Workshop: IRT AI / ML
 
 
+<br />
+
 ### Learn to build your own NLP text classifier and expose it as an API using the following technologies:
 
 - AI-based text analysis with Tensorflow/Keras;
 - Astra DB, a Database-as-a-Service built on Apache Cassandra®;
 - FastAPI, the high-performance Python framework for creating APIs;
 - Many useful Python libraries and packages including `pandas`, `pydantic`, `dotenv`, `sklearn`, `uvicorn`, and more.
+
+<br />
 
 ### During this hands-on workshop, you will:
 
@@ -18,11 +22,15 @@
 - learn how to speed up the API with DB-based caching;
 - inspect how a streaming response is handled in the API.
 
+<br />
+
 ### Prerequisites:
 
 - Familiarity with Python.
 - A GitHub account.
     > If you do not have a GitHub account, create a free account at [GitHub](https://github.com/signup).
+
+<br />
 
 ### Procedure:
 To start with you will create an Astra database and initialise a GitPod environment. Those steps are documented below. 
@@ -31,7 +39,9 @@ The remainder of the workshop continues from within the GitPod environment deplo
 
 ---
 
-## Step 1: Create a database in Astra DB
+<br />
+
+# Step 1: Create a database in Astra DB
 
 You will now create a database with a keyspace in it (a *keyspace* can contain tables). The API needs a couple of tables for persistent storage: they will be created programmatically on startup if they don't exist, so there's no need to worry too much about them.
 
@@ -62,7 +72,9 @@ Besides creating the database, you need to retrieve a *token*, that is, a set of
         <img width="764" src="images/generate_token.png" />
 
 
-## Step 2: Gitpod
+<br />
+
+# Step 2: Gitpod
 
 Gitpod is an IDE in the cloud (modeled after VSCode). It comes with a full "virtual machine" (actually a Kubernetes-managed container), which you will use as if it were your own computer (e.g. downloading files, executing programs and scripts, training the model and eventually starting the API from it).
 
@@ -106,7 +118,9 @@ There are many more other features, probably familiar to those who have experien
 > **Note**: make sure you locate the "console switcher" on the bottom right; all commands, unless specified otherwise, are to be launched in the "work-shell" console.
 
 
-## Step 3. Inspect the Dataset
+<br />
+
+# Step 3. Inspect the Dataset
 Open the file `training/dataset/spam-dataset.csv` and have a look at the lines there.
 > Tip: you can open a file in Gitpod by locating it with the "File Explorer" on your left, but if you like using the keyboard you may simply issue the command `gp open training/dataset/spam-dataset.csv` from the `bash` Console at the bottom.
 
@@ -134,9 +148,11 @@ Look at line 352 of this file for example. Is that message spam or ham?
 
 
 
-## Step 4. Train the Model in Jupyter
+<br />
 
-In the Gitpod environment, we started Jupyter for you (it is running in the notebook-shell console). To open it, run the following command, which will open a browser to the notebook server listening:
+# Step 4. Train the Model in Jupyter
+
+In the Gitpod environment, we started Jupyter for you (it is running in the notebook-shell console). To open it, run the following command **in the `work-shell` console**, which will open a browser to the notebook server listening:
 
 ```
 gp preview --external $(gp url 8888)/notebooks/notebook/machineLearning.ipynb
@@ -144,7 +160,9 @@ gp preview --external $(gp url 8888)/notebooks/notebook/machineLearning.ipynb
 
 > *Note*: The password to unlock the notebook is `spamclassifier`.
 
-### How to run the Jupyter Notebook
+<br />
+
+## How to run the Jupyter Notebook
 A notebook is made of "cells". Select a cell by clicking on it and execute it with Shift+Enter. Run all code cells in the notebook from the first to the last. 
 
 **Note: there are cells with the sole purpose of inspecting the contents of some variables.**
@@ -152,15 +170,21 @@ A notebook is made of "cells". Select a cell by clicking on it and execute it wi
 Take your time, use them to better understand what's going on.
 
 
-## Step 5. Expose the Model as an API
+<br />
+
+# Step 5. Expose the Model as an API
 
 Now your model is trained and saved to disk, ready to be used, it is time to expose it with FastAPI in the form of easy-to-use HTTP requests.
 
 You'll first look at a minimal version of the API, just to get a taste of how FastAPI works, and then turn to a full-fledged version, with more endpoints and a database-backed caching layer.
 
 
-### Configure environment .env file
+<br />
+
+## Configure environment .env file
 Now you need to prepare a configuration file to give the API all required parameters to connect to the database. Fortunately, the Astra CLI has you covered and will automate most of it for you: all you need is to run a couple of commands.
+
+**Use the `work-shell` for these commands.**
 
 First, configure the Astra CLI so that it knows the "token" part of your DB Admin Token (i.e. the string starting with `AstraCS:...`):
 
@@ -208,8 +232,12 @@ At this point, the `.env` file should be OK. If you are curious, have a look at 
 > **Note**: If you don't have (or don't want to use) the actual trained model at hand, you can switch to a lightweight mock by setting `MOCK_MODEL_CLASS="1"` in this dot-env file. The API part of the practice would "not even notice the change".
 
 
-### Minimal API
+<br />
+
+## A Minimal API
 Now that the trained model is there, the `.env` file is ready and the secure bundle is in place, you can start a minimal form of the API with:
+
+**Use the `work-shell` console**
 
 ```
 uvicorn api.minimain:miniapp --reload
@@ -222,10 +250,12 @@ After some (rather verbose) output from Tensorflow, you should see the `INFO: Ap
 > **Note**: This code is purposefully kept very simple: besides not implementing all the features, it also refrains from using some of the facilities provided by FastAPI to better focus on the basics. Look at the full API below for a more comprehensive usage of the framework.
 
 
-#### Query the minimal API
+<br />
+
+### Query the minimal API
 You'll use the command-line tool `curl` to issue simple HTTP requests at your running API (but, of course, any tool capable of doing GETs and POSTs would do).
 
-While the API is running, switch to the other `bash` console in Gitpod (using the console switcher at the bottom right of your IDE) and try the following command **in the curl-shell console**:
+ **Use the `curl-shell` console**:
 
 ```
 curl -s http://localhost:8000 | python -mjson.tool
@@ -266,7 +296,9 @@ Since training is a randomized process, the actual numbers you will obtain will 
 </details>
 
 
-#### Inspect the minimal API code
+<br />
+
+### Inspect the minimal API code
 What is running now is a basic API architecture, which makes use of just the fundamental features of FastAPI. You will shortly launch a more sophisticated one. But first we want to make some observations on the code structure:
 
 The main object is the `FastAPI` instance called `miniapp`. This exposes a decorator that can be used to [attach a Python function](https://fastapi.tiangolo.com/tutorial/first-steps/#define-a-path-operation-decorator) to an API endpoint (see e.g. the ``@miniapp.get('/')`` preceding the function definition). FastAPI will try to match the function arguments with the request parameters.
@@ -284,13 +316,15 @@ The core of the API, the classifier model, is conveniently wrapped into a separa
 > **Note**: have a look at the class in `AIModel.py`. There is nothing specific to spam classification there. Indeed, this is a widely reusable class, that can load and expose any text classifier based on a similar tokenizer-then-predict structure as it is.
 
 
-### Inspect the full API
+<br />
+
+## The Full API
 You can now stop the minimal API (Ctrl-C in its console) and get ready to start the full API. This is your "production-ready" result and, as such, has many more nice features that we will now list (just giving pointers for those interested in knowing more):
 
 <details>
 <summary>Tell me about the nice features of this API</summary>
 
-#### Database and Caching
+### Database and Caching
 In general, running a classifier on some input can be expensive in terms of CPU and time. It makes sense to introduce a caching mechanism, whereby texts that were already processed and cached are not computed again. You happen to have a database, our Astra DB instance, and you'll use it to store all predictions for later querying and retrieval. 
 
 To do so, you need:
@@ -304,7 +338,9 @@ This table is a Cassandra table. We have modeled it according to the query it ne
 
 At this point, the endpoint functions can use the `cachePrediction` and `readCachedPrediction` functions to look for entries in the cache and store them. Note that caching introduces a nontrivial possibility in the multi-input endpoint that only some of the input texts may be cached. As a demonstration, and assuming the cost of computation is way higher than the cost of development/maintenance (which in many cases is true, especially with ML!), the code goes to great lengths to ensure this is handled sparingly and transparently to the caller. See the logic in `multiple_text_predictions` for the details.
 
-#### Documentation and typed response
+<br />
+
+### Documentation and typed response
 We all love well-documented APIs. And FastAPI makes it pretty easy to do so:
 - When instantiating the main `FastAPI` object, all sorts of properties (version number, grouping of endpoints, API title and so on) [can be passed to it](https://fastapi.tiangolo.com/tutorial/metadata/);
 - Docstrings in the endpoint functions, and even the function names themselves, [are known to FastAPI](https://fastapi.tiangolo.com/tutorial/path-operation-configuration/#description-from-docstring);
@@ -312,7 +348,9 @@ We all love well-documented APIs. And FastAPI makes it pretty easy to do so:
 
 This is all used by FastAPI to automatically expose a Swagger UI that makes it easy to experiment with the running API and test it (you'll later see how this makes developers' lives easier). Also a machine-readable description of the API conforming to the OpenAPI specifications is produced and made available.
 
-#### Call logging and StreamingResponse
+<br />
+
+### Call logging and StreamingResponse
 Caching is not the only use you'll make of a database: also all text classification requests are logged to a table, keeping track of the time, the text that was requested and the identity of the caller.
 
 > This may be useful, for instance, to implement rate limiting; in this API you simply expose the datum back to the caller, who is able to issue a request such as `curl -s http://localhost:8000/recent_log | python -mjson.tool` and examine their own recent calls.
@@ -321,7 +359,9 @@ The problem is, in principle this may be a huge list, and you do not want to hav
 
 The idea is very simple: you wrap something like a generator with `StreamingResponse` and FastAPI handles the rest. In this case, however, you want the full response to also be a valid JSON, so you do some tricks to ensure that (taking care of the opening/closing square brackets, to avoid a trailing comma at end of list, etc). In practice the full JSON response is crafted semi-manually (see function `formatCallerLogJSON` for the gory details). For a look at the structure and contents of the database table with the call log data, and a short account on the reason for that choice, see below (section "Inspect the database").
 
-#### Support for a GET endpoint
+<br />
+
+### Support for a GET endpoint
 For illustrative purposes, the API also has a GET endpoint for requesting (single-)text classification. A useful feature is that the `pydantic` models declared as endpoint dependencies will be filled also using query parameters, if they are available and the names match. In this way, the GET endpoint will work, and will internally be able to use a `SingleTextQuery`, even when invoked as follows (try it! **Use the curl-shell console**)
 
 ```
@@ -335,10 +375,14 @@ curl -s \
 
 
 
-### Launch the full API
+<br />
+
+## Launch the full API
 Without further ado, it is time to start the full-fledged API.
 
-Hit Ctrl-C in the work console (if you didn't already stop the "minimal API") and launch the following command this time (you're now closer to "production", so you do not want the `--reload` flag any more):
+**Switch to the `work-shell` console.**
+
+Hit Ctrl-C in the `work-shell` console (if you didn't already stop the "minimal API") and launch the following command this time (you're now closer to "production", so you do not want the `--reload` flag any more):
 
 ```
 uvicorn api.main:app
@@ -348,9 +392,11 @@ The full API is starting (and again, after a somewhat lengthy output you will se
 
 > **Note**: If the API cannot start and you see an error such as `urllib.error.HTTPError: HTTP Error 503: Service Unavailable` while connecting to the DB, most likely your Astra DB instance is currently hibernated. In that case, just open the CQL Console on the Astra UI to bring your DB back to operation.
 
-Quickly launch a couple of requests with curl on the bash console (the same requests already sent to the minimal API earlier) and check the output (**curl-shell console**):
+Quickly launch a couple of requests with curl on the bash console (the same requests already sent to the minimal API earlier) and check the output (**`curl-shell` console**):
 
-#### get basic info
+<br />
+
+**Get basic API info**
 ```
 curl -s http://localhost:8000 | python -mjson.tool
 ```
@@ -359,7 +405,9 @@ This output has been enriched with the "ID of the caller" (actually the IP the c
 
 Now for an actual request to process some text (curl-shell console):
 
-#### single-text endpoint
+<br />
+
+**A single-text endpoint**
 ```
 curl -s -XPOST \
   localhost:8000/prediction \
@@ -372,10 +420,14 @@ Also this output is somewhat richer: there is an `"input"` field (not filled by 
 You could play a bit more with the API, but to do so, let us move to a friendlier interface, offered for free by FastAPI: the Swagger UI.
 
 
-## Step 6: Use the API
+<br />
 
-### Open the Swagger UI
-To open the UI, run (**curl-shell console**):
+# Step 6: Use the API
+
+<br />
+
+## Open the Swagger UI
+To open the UI, run (**`curl-shell` console**):
 ```
 SWAGGER_URL=`gp url 8000`/docs ; 
 echo $SWAGGER_URL ; 
@@ -394,7 +446,9 @@ You will see the Swagger UI. You can now browse the API documentation and even t
 Take a moment to look around. Look at the details for an endpoint and notice that schema description are provided for both the payload and the responses.
 
 
-### Fun with caching
+<br />
+
+## Fun with caching
 Let's have some fun with the caching mechanism and the multiple-text endpoint. For this experiment you will borrow a few lines from a famous poem by T. S. Eliot.
 
 First locate the `/predictions` endpoint, expand it and click "**Try it out**" to access the interactive form. Edit the "**Request Body**" field pasting the following:
@@ -442,14 +496,16 @@ How do the values of `from_cache` look like now? (well, no surprises here).
 Take a look at the cache-reading logic in the `multiple_text_predictions` function code in `main.py`. Sometimes it pays off to carefully avoid wasting CPU cycles.
 
 
-### Call log
+<br />
+
+## API Call log
 The `recent_log` endpoint provides a (time-ordered) listing of all the classification requests you issued recently.
 
 As you saw earlier, behind the scenes this is a `StreamingResponse` and, instead of relying on FastAPI to package your response as JSON, you manually construct its pieces as the data arrives from the database.
 
 First, try the `/recent_log` endpoint in Swagger and check the output matches your previous experiments.
 
-Second, go back to the bash console, and check the result of (**in the curl-shell console**) :
+Second, go back to the curl-shell console, and check the result of (**in the `curl-shell` console**) :
 
 ```
 curl -s localhost:8000/recent_log | python -mjson.tool
@@ -460,8 +516,10 @@ Surprise! Most likely you are not seeing your Eliot lines being listed, at least
 You may want to verify this by comparing the `caller_id` returned by the Swagger invocation of the `/` endpoint and the result of `curl -s localhost:8000 | python -mjson.tool`.
 
 
-## Step 7: Inspect the database
-You can also directly look at the contents of the tables on Astra DB. To do so, **go to the curl-console** to invoke the Astra CLI to open a `cqlsh` console connected to the database and set to work in the desired keyspace:
+<br />
+
+# Step 7: Inspect the database
+You can also directly look at the contents of the tables on Astra DB. To do so, **go to the `curl-console`** to invoke the Astra CLI to open a `cqlsh` console connected to the database and set to work in the desired keyspace:
 
 ```
 . ~/.bashrc
