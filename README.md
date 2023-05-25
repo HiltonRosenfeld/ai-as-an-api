@@ -27,7 +27,7 @@
 ### Procedure:
 To start with you will create an Astra database and initialise a GitPod environment. Those steps are documented below. 
 
-The remainder of the workshop continues from within the GitPod environment deployed in Step 2, and the Jupyter notebook in Step 3.
+The remainder of the workshop continues from within the GitPod environment deployed in Step 2, and the Jupyter notebook in Step 4.
 
 ---
 
@@ -106,27 +106,7 @@ There are many more other features, probably familiar to those who have experien
 > **Note**: make sure you locate the "console switcher" on the bottom right; all commands, unless specified otherwise, are to be launched in the "work-shell" console.
 
 
-## Step 3. Open Jupyter
-
-In the Gitpod environment, we started Jupyter for you (it is running in the notebook-shell console). To open it, run the following command, which will open a browser to the notebook server listening:
-
-```
-gp preview --external $(gp url 8888)/notebooks/notebook/machineLearning.ipynb
-```
-
-> *Note*: The password to unlock the notebooks is `spamclassifier`.
-
-Once the notebook is available, navigate to the notebook directory and click on prepareDataset.ipynb to open it (in yet another tab).
-
-### How to run the Jupyter Notebook
-A notebook is made of "cells". Select a cell by clicking on it and execute it with Shift+Enter. Run all code cells in the notebook from the first to the last. 
-
-**Note: there are cells with the sole purpose of inspecting the contents of some variables.**
-
-Take your time, use them to better understand what's going on.
-
-
-## Step 4. Inspect the starting dataset
+## Step 3. Inspect the starting dataset
 Open the file `training/dataset/spam-dataset.csv` and have a look at the lines there.
 > Tip: you can open a file in Gitpod by locating it with the "File Explorer" on your left, but if you like using the keyboard you may simply issue the command `gp open training/dataset/spam-dataset.csv` from the `bash` Console at the bottom.
 
@@ -152,3 +132,77 @@ Look at line 352 of this file for example. Is that message spam or ham?
 <img src="images/gitpod_gotoline.png" />
 </details>
 
+
+
+## Step 4. Train the Model in Jupyter
+
+In the Gitpod environment, we started Jupyter for you (it is running in the notebook-shell console). To open it, run the following command, which will open a browser to the notebook server listening:
+
+```
+gp preview --external $(gp url 8888)/notebooks/notebook/machineLearning.ipynb
+```
+
+> *Note*: The password to unlock the notebook is `spamclassifier`.
+
+### How to run the Jupyter Notebook
+A notebook is made of "cells". Select a cell by clicking on it and execute it with Shift+Enter. Run all code cells in the notebook from the first to the last. 
+
+**Note: there are cells with the sole purpose of inspecting the contents of some variables.**
+
+Take your time, use them to better understand what's going on.
+
+
+## Step 5. Expost the Model as an API
+
+Now your model is trained and saved to disk, ready to be used, it is time to expose it with FastAPI in the form of easy-to-use HTTP requests.
+
+You'll first look at a minimal version of the API, just to get a taste of how FastAPI works, and then turn to a full-fledged version, with more endpoints and a database-backed caching layer.
+
+
+### Configure environment .env file
+Now you need to prepare a configuration file to give the API all required parameters to connect to the database. Fortunately, the Astra CLI has you covered and will automate most of it for you: all you need is to run a couple of commands.
+
+First, configure the Astra CLI so that it knows the "token" part of your DB Admin Token (i.e. the string starting with `AstraCS:...`):
+
+```
+astra setup
+```
+
+> **Note**: If you get a "command not found" error, please install Astra CLI manually with `curl -Ls "https://dtsx.io/get-astra-cli" | bash` and retry the above commands after running `source ~/.bashrc`.
+
+<details>
+<summary>Show me the setup step</summary>
+<img src="images/astra-setup-token.png" />
+</details>
+
+You can test that everything works by inspecting your database:
+
+```
+astra db get workshops
+```
+
+<details>
+<summary>Show me a typical output</summary>
+<img src="images/astra-db-get.png" />
+</details>
+
+At this point you can have the CLI prepare a `.env` file with all required connection information (keyspace name, access token, location of the [secure connect bundle](https://awesome-astra.github.io/docs/pages/astra/download-scb/) which it downloads automatically) available as environment variables:
+
+```
+astra db create-dotenv -k spamclassifier workshops
+```
+
+Let us add to this file a couple of settings specific to our API:
+
+```
+cat .app-env.sample >> .env
+```
+
+At this point, the `.env` file should be OK. If you are curious, have a look at what's in it: there will be keyspace name, connection secrets, API settings and so on.
+
+<details>
+<summary>Show me what the dot-env file might look like</summary>
+<img src="images/dot-env-2.png" />
+</details>
+
+> **Note**: If you don't have (or don't want to use) the actual trained model at hand, you can switch to a lightweight mock by setting `MOCK_MODEL_CLASS="1"` in this dot-env file. The API part of the practice would "not even notice the change".
