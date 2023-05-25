@@ -2,7 +2,7 @@ image: gitpod/workspace-full:2023-02-27-14-39-56
 tasks:
   - name: notebook-shell
     before: |
-      cd /workspace/ai-as-api
+      cd /workspace/ai-as-an-api
       python -m pip install --upgrade pip
       pip install -r requirements.txt 2>&1 > install.log
       mkdir -p /home/gitpod/.jupyter
@@ -12,13 +12,13 @@ tasks:
       echo "c = get_config()  # noqa" >> /home/gitpod/.jupyter/jupyter_notebook_config.py
       echo "c.NotebookApp.allow_origin = '*'" >> /home/gitpod/.jupyter/jupyter_notebook_config.py
     command: |
-      cd /workspace/ai-as-api
+      cd /workspace/ai-as-an-api
       jupyter notebook --no-browser --NotebookApp.password='sha1:4964484fac7e:73ca028097aae542f45628a09b3da9c6e4168f6f'
   - name: curl-shell
     before: |
-      cd /workspace/ai-as-api
+      cd /workspace/ai-as-an-api
     command: |
-      cd /workspace/ai-as-api
+      cd /workspace/ai-as-an-api
       clear
       echo -e "\n\n\t\t** READY TO START... **\n\n"
       gp open README.md
@@ -27,11 +27,11 @@ tasks:
       curl -Ls "https://dtsx.io/get-astra-cli" | bash
       source /home/gitpod/.bashrc
     init: |
-      cd /workspace/ai-as-api
+      cd /workspace/ai-as-an-api
     command: |
       source /home/gitpod/.astra/cli/astra-init.sh
       source /home/gitpod/.bashrc
-      cd /workspace/ai-as-api
+      cd /workspace/ai-as-an-api
       clear
       echo -e "\n\n\t\t** READY TO START... **\n\n"
 github:
