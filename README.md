@@ -222,3 +222,280 @@ After some (rather verbose) output from Tensorflow, you should see the `INFO: Ap
 > **Note**: This code is purposefully kept very simple: besides not implementing all the features, it also refrains from using some of the facilities provided by FastAPI to better focus on the basics. Look at the full API below for a more comprehensive usage of the framework.
 
 
+#### Query the minimal API
+You'll use the command-line tool `curl` to issue simple HTTP requests at your running API (but, of course, any tool capable of doing GETs and POSTs would do).
+
+While the API is running, switch to the other `bash` console in Gitpod (using the console switcher at the bottom right of your IDE) and try the following command **in the curl-shell console**:
+
+```
+curl -s http://localhost:8000 | python -mjson.tool
+```
+
+This issues a GET request to the `"/"` API endpoint. The result is a small summary, in JSON form, of some of the API parameters inherited through the `.env` file.
+
+The logic to retrieve these settings and make them available to the API is in the config.py module and relies on the pydantic package, that excels at data validation while allowing for surprisingly short and clean code. pydantic pairs very well with FastAPI ([documentation](https://fastapi.tiangolo.com/advanced/settings/)).
+
+> **Note**: If you are feeling adventurous, try stopping the API (Ctrl-C in` the API shell) and re-starting as API_NAME="Fire Dragon!" uvicorn api.minimain:miniapp --reload`. Try again the above `curl` command to see the redefined environment variable `API_NAME` taking precedence over the dot-env file.
+
+This minimal API already accomplishes the basic task for today: namely, it makes the spam classifier available as an API. 
+
+Let's try with some POST requests (**curl-shell console**):
+
+**single-text endpoint**
+```
+curl -s -XPOST \
+  localhost:8000/prediction \
+  -d '{"text": "Click TO WIN a FREE CAR"}' \
+  -H 'Content-Type: application/json' | python -mjson.tool
+```
+
+**multiple-texts endpoint**
+```
+curl -s -XPOST \
+  localhost:8000/predictions \
+  -d '{"texts": ["Click TO WIN a FREE CAR", "I like this endpoint"]}' \
+  -H 'Content-Type: application/json' | python -mjson.tool
+```
+
+That's it: the API correctly receives requests, uses the model to get predictions (i.e. spam/ham scores for each message), and returns them back to the caller.
+
+<details>
+<summary>Show me what the output could look like</summary>
+Since training is a randomized process, the actual numbers you will obtain will not necessarily match what you see here. But you can expect a broad agreement, with the first text being seen as "spam" with at least 80% confidence and the second one being labeled "ham" at least as clearly.
+<img src="images/miniapi_requests.png" />
+</details>
+
+
+#### Inspect the minimal API code
+What is running now is a basic API architecture, which makes use of just the fundamental features of FastAPI. You will shortly launch a more sophisticated one. But first we want to make some observations on the code structure:
+
+The main object is the `FastAPI` instance called `miniapp`. This exposes a decorator that can be used to [attach a Python function](https://fastapi.tiangolo.com/tutorial/first-steps/#define-a-path-operation-decorator) to an API endpoint (see e.g. the ``@miniapp.get('/')`` preceding the function definition). FastAPI will try to match the function arguments with the request parameters.
+
+To make this matching more effective, and gain input validation "for free" with that, the code defines "models" in the pydantic sense and specifies them as the types for the endpoint functions. Try to invoke the API as follows and see what happens. Note the empty body. (**curl-shell console**):
+
+```
+curl -v -s -XPOST \
+  localhost:8000/prediction -d '{}' \
+  -H 'Content-Type: application/json' | python -mjson.tool
+```
+
+The core of the API, the classifier model, is conveniently wrapped into a separate class, `AIModel`, that takes care of loading from files and predicting; it also performs the necessary conversions to offer a friendlier interface to the caller. The model is instantiated within a special `@miniapp.on_event("startup")` utility decorator offered by FastAPI which is used to "register" some operations, effectively scheduling them for execution as soon as the rest of the API is loaded. Then, the model will live as a global variable accessible from the various endpoint functions.
+
+> **Note**: have a look at the class in `AIModel.py`. There is nothing specific to spam classification there. Indeed, this is a widely reusable class, that can load and expose any text classifier based on a similar tokenizer-then-predict structure as it is.
+
+
+### Inspect the full API
+You can now stop the minimal API (Ctrl-C in its console) and get ready to start the full API. This is your "production-ready" result and, as such, has many more nice features that we will now list (just giving pointers for those interested in knowing more):
+
+<details>
+<summary>Tell me about the nice features of this API</summary>
+
+#### Database and Caching
+In general, running a classifier on some input can be expensive in terms of CPU and time. It makes sense to introduce a caching mechanism, whereby texts that were already processed and cached are not computed again. You happen to have a database, our Astra DB instance, and you'll use it to store all predictions for later querying and retrieval. 
+
+To do so, you need:
+- a table, containing processed text data; 
+- a connection to the database, that will be kept alive throughout the life of the API; and 
+- methods to write, and read, entries in that table.
+
+Technically, you will use the Cassandra Python drivers, and in particular the Object Mapper facility they offer. Look into `api/database/*.py`. There is a module that sets up the connection, using the secrets found in the `.env`, and another where the models are defined - in particular the `SpamCacheItem` model, representing an entry in the cache. The database initialization will go together with the spam-model loading into the API "startup" hook. Note that there is no need to explicitly create the table. This is handled automatically by the `sync_table` calls in the `onStartup()` method. 
+
+This table is a Cassandra table. We have modeled it according to the query it needs to support. In this case that means that "model version" and "input text" form the primary key (also partition key), and the prediction outputs are additional data columns. (Note: using the object mapper, the structure of the table is implied in the attributes given to the fields in the corresponding model). 
+
+At this point, the endpoint functions can use the `cachePrediction` and `readCachedPrediction` functions to look for entries in the cache and store them. Note that caching introduces a nontrivial possibility in the multi-input endpoint that only some of the input texts may be cached. As a demonstration, and assuming the cost of computation is way higher than the cost of development/maintenance (which in many cases is true, especially with ML!), the code goes to great lengths to ensure this is handled sparingly and transparently to the caller. See the logic in `multiple_text_predictions` for the details.
+
+#### Documentation and typed response
+We all love well-documented APIs. And FastAPI makes it pretty easy to do so:
+- When instantiating the main `FastAPI` object, all sorts of properties (version number, grouping of endpoints, API title and so on) [can be passed to it](https://fastapi.tiangolo.com/tutorial/metadata/);
+- Docstrings in the endpoint functions, and even the function names themselves, [are known to FastAPI](https://fastapi.tiangolo.com/tutorial/path-operation-configuration/#description-from-docstring);
+- Additional annotations can be passed to the endpoint decorators, such as the expected structure of the [response JSON](https://fastapi.tiangolo.com/tutorial/response-model/#response-model) (for this reason, we took the extra care of defining `pydantic` models for the responses as well, for instance `PredictionResult`).
+
+This is all used by FastAPI to automatically expose a Swagger UI that makes it easy to experiment with the running API and test it (you'll later see how this makes developers' lives easier). Also a machine-readable description of the API conforming to the OpenAPI specifications is produced and made available.
+
+#### Call logging and StreamingResponse
+Caching is not the only use you'll make of a database: also all text classification requests are logged to a table, keeping track of the time, the text that was requested and the identity of the caller.
+
+> This may be useful, for instance, to implement rate limiting; in this API you simply expose the datum back to the caller, who is able to issue a request such as `curl -s http://localhost:8000/recent_log | python -mjson.tool` and examine their own recent calls.
+
+The problem is, in principle this may be a huge list, and you do not want to have it all in memory on the API side before sending out a giant response to the caller. Especially considering the data from the database will be paginated (in a way that is handled automatically for us by the Cassandra drivers' object models). So what do you do here? It would be nice to start streaming out the API response as the first chunk of data arrives from the database ... and that is exactly what we do, with the `StreamingResponse` construct [provided by FastAPI](https://fastapi.tiangolo.com/advanced/custom-response/?h=streamingresponse#streamingresponse). 
+
+The idea is very simple: you wrap something like a generator with `StreamingResponse` and FastAPI handles the rest. In this case, however, you want the full response to also be a valid JSON, so you do some tricks to ensure that (taking care of the opening/closing square brackets, to avoid a trailing comma at end of list, etc). In practice the full JSON response is crafted semi-manually (see function `formatCallerLogJSON` for the gory details). For a look at the structure and contents of the database table with the call log data, and a short account on the reason for that choice, see below (section "Inspect the database").
+
+#### Support for a GET endpoint
+For illustrative purposes, the API also has a GET endpoint for requesting (single-)text classification. A useful feature is that the `pydantic` models declared as endpoint dependencies will be filled also using query parameters, if they are available and the names match. In this way, the GET endpoint will work, and will internally be able to use a `SingleTextQuery`, even when invoked as follows (try it! **Use the curl-shell console**)
+
+```
+curl -s \
+  "localhost:8000/prediction?text=This+is+a+nice+day&skip_cache=true&echo_input=1" \
+  | python -mjson.tool
+```
+
+(The way to have this mechanism working goes through the topic of dependency injection in FastAPI and in particular the "classes as dependencies" part. See here for more details on this).
+</details>
+
+
+
+### Launch the full API
+Without further ado, it is time to start the full-fledged API.
+
+Hit Ctrl-C in the work console (if you didn't already stop the "minimal API") and launch the following command this time (you're now closer to "production", so you do not want the `--reload` flag any more):
+
+```
+uvicorn api.main:app
+```
+
+The full API is starting (and again, after a somewhat lengthy output you will see something like `Uvicorn running on http://127.0.0.1:8000` being printed).
+
+> **Note**: If the API cannot start and you see an error such as `urllib.error.HTTPError: HTTP Error 503: Service Unavailable` while connecting to the DB, most likely your Astra DB instance is currently hibernated. In that case, just open the CQL Console on the Astra UI to bring your DB back to operation.
+
+Quickly launch a couple of requests with curl on the bash console (the same requests already sent to the minimal API earlier) and check the output (**curl-shell console**):
+
+#### get basic info
+```
+curl -s http://localhost:8000 | python -mjson.tool
+```
+
+This output has been enriched with the "ID of the caller" (actually the IP the call comes from). To access this piece of information from within the route, you make use of the very flexible dependency system offered by FastAPI, simply declaring the endpoint function as having a parameter of type `Request:` you will be then able to read its `client` member to access the caller IP address.
+
+Now for an actual request to process some text (curl-shell console):
+
+#### single-text endpoint
+```
+curl -s -XPOST \
+  localhost:8000/prediction \
+  -d '{"text": "Click TO WIN a FREE CAR"}' \
+  -H 'Content-Type: application/json' | python -mjson.tool
+```
+
+Also this output is somewhat richer: there is an `"input"` field (not filled by default) and, most important, a `"from_cache"` field - presumably `false`. But, if you re-launch the very same `curl` command (try it!), the response will have `"from_cache"` set to `true`. This is the caching mechanism at work.
+
+You could play a bit more with the API, but to do so, let us move to a friendlier interface, offered for free by FastAPI: the Swagger UI.
+
+
+## Step 6: Use the API
+
+### Open the Swagger UI
+To open the UI, run (**curl-shell console**):
+```
+SWAGGER_URL=`gp url 8000`/docs ; 
+echo $SWAGGER_URL ; 
+gp preview --external $SWAGGER_URL
+```
+
+You will see the Swagger UI. You can now browse the API documentation and even try the endpoints out.
+
+> Note: If you are running locally, the SWagger UI is at http://127.0.0.1:8000/docs.
+
+<details>
+<summary>Show me the Swagger UI main page</summary>
+<img src="images/swagger_ui.png" />
+</details>
+
+Take a moment to look around. Look at the details for an endpoint and notice that schema description are provided for both the payload and the responses.
+
+
+### Fun with caching
+Let's have some fun with the caching mechanism and the multiple-text endpoint. For this experiment you will borrow a few lines from a famous poem by T. S. Eliot.
+
+First locate the `/predictions` endpoint, expand it and click "**Try it out**" to access the interactive form. Edit the "**Request Body**" field pasting the following:
+
+```
+{
+  "texts": [
+    "I have seen them riding seaward on the waves",
+    "When the wind blows the water white and black."
+  ]
+}
+```
+
+Click the big "**Execute**" blue button and look for the "**Response body**" below. You will see that both lines are new to the classifier, indeed their `from_cache` returns `false`.
+
+Now add a third line and re-issue the request, with body
+```
+{
+  "texts": [
+    "I have seen them riding seaward on the waves",
+    "When the wind blows the water white and black.",
+    "By sea-girls wreathed with seaweed red and brown"
+  ]
+}
+```
+
+and check the response this time. The `from_cache` will have a `true-true-false` pattern this time.
+
+Finally, reinstate all lines of the stanza (so far only the odd ones were passed!):
+```
+{
+  "texts": [
+    "I have seen them riding seaward on the waves",
+    "Combing the white hair of the waves blown back",
+    "When the wind blows the water white and black.",
+    "We have lingered in the chambers of the sea",
+    "By sea-girls wreathed with seaweed red and brown",
+    "Till human voices wake us, and we drown."
+  ]
+}
+```
+
+How do the values of `from_cache` look like now? (well, no surprises here).
+
+Take a look at the cache-reading logic in the `multiple_text_predictions` function code in `main.py`. Sometimes it pays off to carefully avoid wasting CPU cycles.
+
+
+#### Call log
+The `recent_log` endpoint provides a (time-ordered) listing of all the classification requests you issued recently.
+
+As you saw earlier, behind the scenes this is a `StreamingResponse` and, instead of relying on FastAPI to package your response as JSON, you manually construct its pieces as the data arrives from the database.
+
+First, try the `/recent_log` endpoint in Swagger and check the output matches your previous experiments.
+
+Second, go back to the bash console, and check the result of (**in the curl-shell console**) :
+
+```
+curl -s localhost:8000/recent_log | python -mjson.tool
+```
+
+Surprise! Most likely you are not seeing your Eliot lines being listed, at least not on Gitpod (but you may see the calls you issued earlier with `curl`). The reason is that requests coming from the Swagger UI pass through Gitpod's port and domain mappings and appear to come from a different IP than those from "the local localhost".
+
+You may want to verify this by comparing the `caller_id` returned by the Swagger invocation of the `/` endpoint and the result of `curl -s localhost:8000 | python -mjson.tool`.
+
+
+## Step 7: Inspect the database
+You can also directly look at the contents of the tables on Astra DB. To do so, **go to the curl-console** to invoke the Astra CLI to open a `cqlsh` console connected to the database and set to work in the desired keyspace:
+
+```
+. ~/.bashrc
+astra db cqlsh workshops -k spamclassifier
+```
+
+> **Note**: Commands entered in the CQL Console are terminated with a semicolon (`;`) and can span multiple lines. Run them with the `Enter` key. If you want to interrupt the command you are entering, hit `Ctrl-C` to be brought back to the prompt. To leave `cqlsh`, use the `EXIT` command. See the [CQL Language Reference](https://docs.datastax.com/en/cql-oss/3.x/cql/cql_reference/cqlCommandsTOC.html) for more commands.
+
+
+Start by checking which tables are there?
+
+```
+DESC TABLES;
+```
+
+List some sample records from the cache table:
+
+```
+SELECT
+  model_version, input, result, confidence, DATEOF(stored_at)
+FROM spam_cache_items
+  LIMIT 10;
+```
+
+And, similarly, look at the recent call log for the "localhost" caller:
+
+```
+SELECT * FROM spam_calls_per_caller
+  WHERE caller_id = '127.0.0.1'
+  AND called_hour='2023-05-30 10:00:00.000Z';
+```
+
+> **Note**: For the above to show results, you have to take care of adapting the date and (whole) hour to the results of previous query; also, possibly the caller_id may have to be edited to reflect what you see from the Swagger "/" response.
+
+The reason why the call log is partitioned in hourly chunks (and not only by caller_id) has to do with the way the Cassandra database, on which Astra DB is built, works: in short we do not want our partitions to grow indefinitely. Unfortunately a thorough discussion of this topic would lead us too far away. If you are curious, we strongly recommend you start from the exercises [Data modeling by example](https://www.datastax.com/learn/data-modeling-by-example) and [What is Cassandra?}(https://www.datastax.com/cassandra). You will embark on a long and exciting journey!
+
+
