@@ -94,7 +94,7 @@ Now you need to prepare a configuration file with all required parameters to con
 **Use the `work-shell` for these commands.**
 
 ```
-astra db create-dotenv -k spamclassifier workshopshr
+astra db create-dotenv -k <YOUR_KEYSPACE_NAME> workshopsaws
 ```
 
 Let us add to this file a couple of settings specific to our API:
@@ -513,7 +513,7 @@ You can also directly look at the contents of the tables on Astra DB. To do so, 
 
 ```
 . ~/.bashrc
-astra db cqlsh workshops -k spamclassifier
+astra db cqlsh workshopsaws -k <YOUR_KEYSPACE_NAME>
 ```
 
 > **Note**: Commands entered in the CQL Console are terminated with a semicolon (`;`) and can span multiple lines. Run them with the `Enter` key. If you want to interrupt the command you are entering, hit `Ctrl-C` to be brought back to the prompt. To leave `cqlsh`, use the `EXIT` command. See the [CQL Language Reference](https://docs.datastax.com/en/cql-oss/3.x/cql/cql_reference/cqlCommandsTOC.html) for more commands.
