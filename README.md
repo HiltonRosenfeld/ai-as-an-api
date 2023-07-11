@@ -36,33 +36,81 @@ The remainder of the workshop continues from within the GitPod environment deplo
 
 # Step 1: Create a database in Astra DB
 
-You will now create a database with a keyspace in it (a *keyspace* can contain tables). The API needs a couple of tables for persistent storage: they will be created programmatically on startup if they don't exist, so there's no need to worry too much about them.
+We have created a database in AWS Sydney. You will create a keyspace in it (a *keyspace* can contain tables). The API needs a couple of tables for persistent storage: they will be created programmatically on startup if they don't exist, so there's no need to worry too much about them.
 
-Besides creating the database, you need to retrieve a *token*, that is, a set of credentials used later to connect to it in a secure and authenticated way.
+We will provide you with a *token*, that is, a set of credentials to connect to it in a secure and authenticated way.
 
-1. Login to your Astra account.
-    > If you do not have an Astra account, create a free trial account at [Astra Registration](https://astra.datastax.com/register).
+<br />
 
-2. Create a Database:
-    1. Navigate to *Databases* in the Menu.
-    2. Click the *Create Database* button.
-    3. Create the database using the following:
-        * Database Name: `workshops`
-        * Keyspace Name: `spamclassifier`
-        * Provider: `Google Cloud`
-        * Region: `us-east1`
-        
-        <img width="345" src="images/create_database.png">
+## Configure Astra CLI
+Astra CLI provides a command line interface in a terminal to operate DataStax Astra. The goal is to offer access to any feature without accessing the user interface.
 
-3. Generate and retrieve a DB Token:
-    1. Navigate to *Settings* in the Menu.
-    2. Navigate to *Token Management* within the Settings sub-menu.
-    3. Select the role `Database Administrator`.
-    4. Click the *Generate Token* button.
-    5. Click on *Download Token Details*.
-    6. Open the downloaded file `GeneratedToken.csv` and verify that you can read the file.
+**Use the `work-shell` for these commands.**
 
-        <img width="764" src="images/generate_token.png" />
+First, configure the Astra CLI so that it knows the "token" part of your DB Admin Token (i.e. the string starting with `AstraCS:...`):
+
+```
+astra setup
+```
+
+> **Note**: If you get a "command not found" error, please install Astra CLI manually with `curl -Ls "https://dtsx.io/get-astra-cli" | bash` and retry the above commands after running `source ~/.bashrc`.
+
+<details>
+<summary>Show me the setup step</summary>
+<img src="images/astra-setup-token-2.png" />
+</details>
+
+You can test that everything works by inspecting the database:
+
+```
+astra db get workshopsaws
+```
+
+<details>
+<summary>Show me a typical output</summary>
+<img src="images/astra-db-get-2.png" />
+</details>
+
+<br />
+
+## Create a keyspace in Astra DB
+
+A keyspace is a logical grouping for tables, typically to group related tables together. For example, all tables for a particular application could be contained within a single keyspace.
+
+**Use the `work-shell` for these commands.**
+
+1. Compose a keyspace name for this project made up of your name. Example: `ks_hilton_rosenfeld`
+
+2. Create the keyspace using the Astra CLI
+    ```
+    astra db create-keyspace -k <YOUR_KEYSPACE_NAME> workshopsaws
+    ```
+
+<br />
+
+## Configure Astra connection .env file
+Now you need to prepare a configuration file with all required parameters to connect to the database. Fortunately, the Astra CLI has you covered and will automate most of it for you: all you need is to run a couple of commands which will prepare a `.env` file with all required connection information (keyspace name, access token, location of the [secure connect bundle](https://awesome-astra.github.io/docs/pages/astra/download-scb/) which it downloads automatically) available as environment variables.
+
+**Use the `work-shell` for these commands.**
+
+```
+astra db create-dotenv -k spamclassifier workshopshr
+```
+
+Let us add to this file a couple of settings specific to our API:
+
+```
+cat .app-env.sample >> .env
+```
+
+At this point, the `.env` file should be OK. If you are curious, have a look at what's in it: there will be keyspace name, connection secrets, API settings and so on.
+
+<details>
+<summary>Show me what the dot-env file might look like</summary>
+<img src="images/dot-env-2.png" />
+</details>
+
+> **Note**: If you don't have (or don't want to use) the actual trained model at hand, you can switch to a lightweight mock by setting `MOCK_MODEL_CLASS="1"` in this dot-env file. The API part of the practice would "not even notice the change".
 
 
 <br />
@@ -171,59 +219,6 @@ When you have completed the Jupyter Notebook, come back to this document and con
 Now your model is trained and saved to disk, ready to be used, it is time to expose it with FastAPI in the form of easy-to-use HTTP requests.
 
 You'll first look at a minimal version of the API, just to get a taste of how FastAPI works, and then turn to a full-fledged version, with more endpoints and a database-backed caching layer.
-
-
-<br />
-
-## Configure Astra connection .env file
-Now you need to prepare a configuration file to give the API all required parameters to connect to the database. Fortunately, the Astra CLI has you covered and will automate most of it for you: all you need is to run a couple of commands.
-
-**Use the `work-shell` for these commands.**
-
-First, configure the Astra CLI so that it knows the "token" part of your DB Admin Token (i.e. the string starting with `AstraCS:...`):
-
-```
-astra setup
-```
-
-> **Note**: If you get a "command not found" error, please install Astra CLI manually with `curl -Ls "https://dtsx.io/get-astra-cli" | bash` and retry the above commands after running `source ~/.bashrc`.
-
-<details>
-<summary>Show me the setup step</summary>
-<img src="images/astra-setup-token-2.png" />
-</details>
-
-You can test that everything works by inspecting your database:
-
-```
-astra db get workshops
-```
-
-<details>
-<summary>Show me a typical output</summary>
-<img src="images/astra-db-get-2.png" />
-</details>
-
-At this point you can have the CLI prepare a `.env` file with all required connection information (keyspace name, access token, location of the [secure connect bundle](https://awesome-astra.github.io/docs/pages/astra/download-scb/) which it downloads automatically) available as environment variables:
-
-```
-astra db create-dotenv -k spamclassifier workshops
-```
-
-Let us add to this file a couple of settings specific to our API:
-
-```
-cat .app-env.sample >> .env
-```
-
-At this point, the `.env` file should be OK. If you are curious, have a look at what's in it: there will be keyspace name, connection secrets, API settings and so on.
-
-<details>
-<summary>Show me what the dot-env file might look like</summary>
-<img src="images/dot-env-2.png" />
-</details>
-
-> **Note**: If you don't have (or don't want to use) the actual trained model at hand, you can switch to a lightweight mock by setting `MOCK_MODEL_CLASS="1"` in this dot-env file. The API part of the practice would "not even notice the change".
 
 
 <br />
