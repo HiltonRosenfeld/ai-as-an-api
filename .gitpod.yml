@@ -15,7 +15,7 @@ tasks:
       echo "c.NotebookApp.ip = '0.0.0.0'" >> /home/gitpod/.jupyter/jupyter_notebook_config.py
     command: |
       cd /workspace/ai-as-an-api
-      jupyter notebook --no-browser --NotebookApp.password='sha1:4964484fac7e:73ca028097aae542f45628a09b3da9c6e4168f6f'
+      jupyter notebook --no-browser
   - name: curl-shell
     before: |
       cd /workspace/ai-as-an-api
