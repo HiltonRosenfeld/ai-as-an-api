@@ -49,7 +49,7 @@ Besides creating the database, you need to retrieve a *token*, that is, a set of
     3. Create the database using the following:
         * Database Name: `workshops`
         * Keyspace Name: `spamclassifier`
-        * Provider: `Google Cloudß`
+        * Provider: `Google Cloud`
         * Region: `us-east1`
         
         <img width="345" src="images/create_database.png">
