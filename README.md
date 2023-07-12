@@ -381,9 +381,11 @@ The full API is starting (and again, after a somewhat lengthy output you will se
 
 > **Note**: If the API cannot start and you see an error such as `urllib.error.HTTPError: HTTP Error 503: Service Unavailable` while connecting to the DB, most likely your Astra DB instance is currently hibernated. In that case, just open the CQL Console on the Astra UI to bring your DB back to operation.
 
-Quickly launch a couple of requests with curl on the bash console (the same requests already sent to the minimal API earlier) and check the output (**`curl-shell` console**):
+Quickly launch a couple of requests with curl on the bash console (the same requests already sent to the minimal API earlier) and check the output:
 
 <br />
+
+**Switch to the `curl-shell` console.**
 
 **Get basic API info**
 ```
@@ -545,7 +547,7 @@ And, similarly, look at the recent call log for the "localhost" caller:
 ```
 SELECT * FROM spam_calls_per_caller
   WHERE caller_id = '127.0.0.1'
-  AND called_hour='2023-05-30 10:00:00.000Z';
+  AND called_hour='2023-07-12 07:00:00.000Z';
 ```
 
 > **Note**: For the above to show results, you have to take care of adapting the date and (whole) hour to the results of previous query; also, possibly the caller_id may have to be edited to reflect what you see from the Swagger "/" response.
