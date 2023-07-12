@@ -516,7 +516,7 @@ You may want to verify this by comparing the `caller_id` returned by the Swagger
 
 You can also directly look at the contents of the tables on Astra DB. 
 
-**Use the `curl-shell` console.**
+**Use the `work-shell` console.**
 
 To do so, invoke the Astra CLI to open a `cqlsh` console connected to the database and set to work in the desired keyspace:
 
