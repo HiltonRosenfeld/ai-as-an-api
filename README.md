@@ -416,7 +416,10 @@ You could play a bit more with the API, but to do so, let us move to a friendlie
 <br />
 
 ## Open the Swagger UI
-To open the UI, run (**`curl-shell` console**):
+
+**Use the `curl-shell` console.**
+
+To open the UI, run:
 ```
 SWAGGER_URL=`gp url 8000`/docs ; 
 echo $SWAGGER_URL ; 
@@ -508,7 +511,12 @@ You may want to verify this by comparing the `caller_id` returned by the Swagger
 <br />
 
 # Step 7: Inspect the database
-You can also directly look at the contents of the tables on Astra DB. To do so, **go to the `curl-console`** to invoke the Astra CLI to open a `cqlsh` console connected to the database and set to work in the desired keyspace:
+
+You can also directly look at the contents of the tables on Astra DB. 
+
+**Use the `curl-shell` console.**
+
+To do so, invoke the Astra CLI to open a `cqlsh` console connected to the database and set to work in the desired keyspace:
 
 ```
 astra db cqlsh workshopsaws -k <YOUR_KEYSPACE_NAME>
