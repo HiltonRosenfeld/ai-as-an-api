@@ -26,48 +26,13 @@
     > If you do not have a GitHub account, create a free account at [GitHub](https://github.com/signup).
 
 ### Procedure:
-To start with you will create an Astra database and initialise a GitPod environment. Those steps are documented below. 
-
-The remainder of the workshop continues from within the GitPod environment deployed in Step 2, and the Jupyter notebook in Step 4.
+To start with you will initialise a GitPod environment. The remainder of the workshop continues from within the GitPod environment.
 
 ---
 
 <br />
 
-# Step 1: Create a database in Astra DB
-
-You will now create a database with a keyspace in it (a *keyspace* can contain tables). The API needs a couple of tables for persistent storage: they will be created programmatically on startup if they don't exist, so there's no need to worry too much about them.
-
-Besides creating the database, you need to retrieve a *token*, that is, a set of credentials used later to connect to it in a secure and authenticated way.
-
-1. Login to your Astra account.
-    > If you do not have an Astra account, create a free trial account at [Astra Registration](https://astra.datastax.com/register).
-
-2. Create a Database:
-    1. Navigate to *Databases* in the Menu.
-    2. Click the *Create Database* button.
-    3. Create the database using the following:
-        * Database Name: `workshops`
-        * Keyspace Name: `spamclassifier`
-        * Provider: `Google Cloudß`
-        * Region: `us-east1`
-        
-        <img width="345" src="images/create_database.png">
-
-3. Generate and retrieve a DB Token:
-    1. Navigate to *Settings* in the Menu.
-    2. Navigate to *Token Management* within the Settings sub-menu.
-    3. Select the role `Database Administrator`.
-    4. Click the *Generate Token* button.
-    5. Click on *Download Token Details*.
-    6. Open the downloaded file `GeneratedToken.csv` and verify that you can read the file.
-
-        <img width="764" src="images/generate_token.png" />
-
-
-<br />
-
-# Step 2: Gitpod
+# Step 1: Gitpod
 
 Gitpod is an IDE in the cloud (modeled after VSCode). It comes with a full "virtual machine" (actually a Kubernetes-managed container), which you will use as if it were your own computer (e.g. downloading files, executing programs and scripts, training the model and eventually starting the API from it).
 
@@ -109,6 +74,39 @@ There are many more other features, probably familiar to those who have experien
 </details>
 
 > **Note**: make sure you locate the "console switcher" on the bottom right; all commands, unless specified otherwise, are to be launched in the "work-shell" console.
+
+
+<br />
+
+# Step 2: Create a database in Astra DB
+
+You will now create a database with a keyspace in it (a *keyspace* can contain tables). The API needs a couple of tables for persistent storage: they will be created programmatically on startup if they don't exist, so there's no need to worry too much about them.
+
+Besides creating the database, you need to retrieve a *token*, that is, a set of credentials used later to connect to it in a secure and authenticated way.
+
+1. Login to your Astra account.
+    > If you do not have an Astra account, create a free trial account at [Astra Registration](https://astra.datastax.com/register).
+
+2. Create a Database:
+    1. Navigate to *Databases* in the Menu.
+    2. Click the *Create Database* button.
+    3. Create the database using the following:
+        * Database Name: `workshops`
+        * Keyspace Name: `spamclassifier`
+        * Provider: `Google Cloud`
+        * Region: `us-east1`
+        
+        <img width="345" src="images/create_database.png">
+
+3. Generate and retrieve a DB Token:
+    1. Navigate to *Settings* in the Menu.
+    2. Navigate to *Token Management* within the Settings sub-menu.
+    3. Select the role `Database Administrator`.
+    4. Click the *Generate Token* button.
+    5. Click on *Download Token Details*.
+    6. Open the downloaded file `GeneratedToken.csv` and verify that you can read the file.
+
+        <img width="764" src="images/generate_token.png" />
 
 
 <br />
@@ -178,7 +176,8 @@ You'll first look at a minimal version of the API, just to get a taste of how Fa
 ## Configure Astra connection .env file
 Now you need to prepare a configuration file to give the API all required parameters to connect to the database. Fortunately, the Astra CLI has you covered and will automate most of it for you: all you need is to run a couple of commands.
 
-**Use the `work-shell` for these commands.**
+**Use the `work-shell` console.**
+
 
 First, configure the Astra CLI so that it knows the "token" part of your DB Admin Token (i.e. the string starting with `AstraCS:...`):
 
@@ -231,7 +230,7 @@ At this point, the `.env` file should be OK. If you are curious, have a look at 
 ## A Minimal API
 Now that the trained model is there, the `.env` file is ready and the secure bundle is in place, you can start a minimal form of the API with:
 
-**Use the `work-shell` console**
+**Use the `work-shell` console.**
 
 ```
 uvicorn api.minimain:miniapp --reload
@@ -375,7 +374,7 @@ curl -s \
 ### Launch the full API
 Without further ado, it is time to start the full-fledged API.
 
-**Switch to the `work-shell` console.**
+**Use the `work-shell` console**
 
 Hit Ctrl-C in the `work-shell` console (if you didn't already stop the "minimal API") and launch the following command this time (you're now closer to "production", so you do not want the `--reload` flag any more):
 
@@ -422,7 +421,11 @@ You could play a bit more with the API, but to do so, let us move to a friendlie
 <br />
 
 ## Open the Swagger UI
-To open the UI, run (**`curl-shell` console**):
+
+**Use the `curl-shell` console**
+
+
+To open the UI, run:
 ```
 SWAGGER_URL=`gp url 8000`/docs ; 
 echo $SWAGGER_URL ; 
@@ -500,7 +503,9 @@ As you saw earlier, behind the scenes this is a `StreamingResponse` and, instead
 
 First, try the `/recent_log` endpoint in Swagger and check the output matches your previous experiments.
 
-Second, go back to the curl-shell console, and check the result of (**in the `curl-shell` console**) :
+**Use the `curl-shell` console**
+
+Second,  check the result of:
 
 ```
 curl -s localhost:8000/recent_log | python -mjson.tool
@@ -514,7 +519,9 @@ You may want to verify this by comparing the `caller_id` returned by the Swagger
 <br />
 
 # Step 7: Inspect the database
-You can also directly look at the contents of the tables on Astra DB. To do so, **go to the `curl-console`** to invoke the Astra CLI to open a `cqlsh` console connected to the database and set to work in the desired keyspace:
+You can also directly look at the contents of the tables on Astra DB. To do so, we will invoke the Astra CLI to open a `cqlsh` console connected to the database and set to work in the desired keyspace:
+
+**Use the `curl-shell` console**
 
 ```
 . ~/.bashrc
