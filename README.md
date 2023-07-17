@@ -45,7 +45,7 @@ The button below will:
 
 **Click on the Gitpod button:**
 
-<a href="https://gitpod.io/#https://github.com/in-realtime/ai-as-an-api"><img src="images/open-in-gitpod.svg" alt="Start the Interactive Lab on Gitpod" /></a>
+<a href="https://gitpod.io/#https://github.com/HiltonRosenfeld/ai-as-an-api"><img src="images/open-in-gitpod.svg" alt="Start the Interactive Lab on Gitpod" /></a>
 
 > **Note**: you may have to authorise GitPod to sign in with your GitHub account.
 
